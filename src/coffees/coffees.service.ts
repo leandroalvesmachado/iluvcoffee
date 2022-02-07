@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
@@ -7,6 +7,8 @@ import { PaginationQueryDto } from './../common/dto/pagination-query.dto';
 import { Coffee } from './entities/coffee.entity';
 import { Flavor } from './entities/flavor.entity';
 import { Event } from './../events/entities/event.entity';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import coffeesConfig from './config/coffee.config';
 
 @Injectable()
 export class CoffeesService {
@@ -16,7 +18,28 @@ export class CoffeesService {
     @InjectRepository(Flavor)
     private readonly flavorRepository: Repository<Flavor>,
     private readonly connection: Connection,
-  ) {}
+    private readonly configService: ConfigService,
+    @Inject(coffeesConfig.KEY)
+    private readonly coffeesConfiguration: ConfigType<typeof coffeesConfig>,
+  ) {
+    // utilizando o configService para captruar as variáveis de configuração
+    const databaseHost1 = this.configService.get<string>(
+      'DATABASE_HOST',
+      'localhost',
+    );
+    console.log(databaseHost1);
+
+    // utilizando o configService para captruar as variáveis de configuração do arquivo config/app.config.ts
+    const databaseHost2 = this.configService.get('database.host', 'localhost');
+    console.log(databaseHost2);
+
+    // utilizando o configService para captruar as variáveis de configuração do arquivo coffees/config/coffees.config.ts
+    // arquivo de configuração separado para cada módulo, quando necessário
+    const coffeesConfig = this.configService.get('coffees');
+    console.log(coffeesConfig);
+
+    console.log(coffeesConfiguration);
+  }
 
   findAll(paginationQuery: PaginationQueryDto) {
     const { limit, offset } = paginationQuery;

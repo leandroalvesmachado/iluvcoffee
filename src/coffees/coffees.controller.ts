@@ -10,15 +10,19 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
+// @UsePipes(new ValidationPipe()) validation para todo o controller
 @Controller('coffees')
 export class CoffeesController {
   constructor(private readonly coffeesService: CoffeesService) {}
 
+  // @UsePipes(new ValidationPipe()) validation para todo o método
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto) {
     // const { limit, offset } = paginationQuery;
